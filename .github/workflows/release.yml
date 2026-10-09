@@ -1,11 +1,11 @@
 name: Release
 
 # Check and release through GreenTech-Solutions/factorio-mod-tools: the check runs on every push and pull request, the
-# release (version, changelog.txt, info.json, mod portal, GitHub release) on a push to main.
+# release (version, changelog.txt, info.json, mod portal, GitHub release) on a push to master.
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
   release:
     name: release
     needs: check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
       contents: write
