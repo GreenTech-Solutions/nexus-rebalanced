@@ -1,0 +1,5 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 2026-10-09
+  Features:
+    - Balance for Nexus: eased prices, beacons on its machines, a faster omega lab, zero-point energy engine pumps of the core's quality, the warp drive only to the Oort cloud and Sol, storms that calm down, a shorter road to Nexus with razi-protocol
