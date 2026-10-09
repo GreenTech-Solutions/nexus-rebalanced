@@ -1,0 +1,21 @@
+{
+  "name": "nexus-rebalanced",
+  "version": "0.0.0",
+  "title": "Nexus Rebalanced",
+  "author": "Alex Green",
+  "homepage": "https://github.com/GreenTech-Solutions/nexus-rebalanced",
+  "description": "Balance for Nexus Extended Promethium Endgame: the prices of 1.3.0 eased, beacons on the machines of Nexus, a faster omega lab, the zero-point energy engine core limited by its own quality, the warp drive only on the way to the Oort cloud and Sol, and storms that calm down. Works with Nexus-Updated (the 2.1 fork) and with Nexus itself.",
+  "factorio_version": "2.1",
+  "dependencies": [
+    "base >= 2.1.0",
+    "space-age >= 2.1.0",
+    "? Nexus",
+    "? Nexus-Updated",
+    "? Nexus-Threat",
+    "? Nexus-Threat-Updated",
+    "? razi-protocol",
+    "? Krastorio2",
+    "? rigor-module"
+  ],
+  "space_travel_required": true
+}
