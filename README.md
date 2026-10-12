@@ -7,7 +7,7 @@ release. Without Nexus the mod does nothing.
 | What | Change |
 | --- | --- |
 | Prices | Nexus 1.3.0 raised the inputs of 25 recipes up to 133 times and halved the output of five parts. Final products cost at most 3x what they cost in 1.2.9 (never more than in 1.3.4); the parts under them cost what they cost in 1.2.9. Recycling and the copies of rigor-module follow the new recipes |
-| Beacons | The 13 machines of Nexus that take modules take beacon effects too |
+| Beacons | The singularity assembler, the matter stabilizer and the two photon enrichment chambers take beacon effects: none of them can get productivity. The other Nexus machines and the omega lab stay without beacons, as in Nexus: the omega beacon passes on productivity |
 | Omega lab | Research speed 20 (was 2) and 6 module slots (was 4) |
 | Zero-point energy engine core | Its four limiter pumps are of its own quality: a legendary core is no longer capped at the inflow of a normal one |
 | Warp drive | Works only on routes that start or end at the Oort cloud or Sol; elsewhere it threw the platform through asteroid lines at about 0.6 UPS |

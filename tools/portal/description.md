@@ -3,7 +3,7 @@ Balance for [Nexus Extended Promethium Endgame](https://mods.factorio.com/mod/Ne
 ## What changes
 
 - **Prices.** Nexus 1.3.0 raised the inputs of 25 recipes up to 133 times and halved the output of five parts. Final products cost at most 3x what they cost in 1.2.9 (never more than in 1.3.4); the parts under them cost what they cost in 1.2.9. Recycling and the copies of rigor-module follow the new recipes.
-- **Beacons** reach the 13 machines of Nexus that take modules.
+- **Beacons** reach the singularity assembler, the matter stabilizer and the two photon enrichment chambers, where no productivity can pass. The other Nexus machines and the omega lab stay without beacons: the omega beacon would push their productivity to the cap, and the lab has no cap.
 - **Omega lab:** research speed 20 (was 2) and 6 module slots (was 4).
 - **Zero-point energy engine core:** its limiter pumps are of its own quality, so a legendary core is no longer capped at the inflow of a normal one.
 - **Warp drive** works only on routes to or from the Oort cloud and Sol; elsewhere it threw the platform through asteroid lines at about 0.6 UPS.
