@@ -76,6 +76,10 @@ end
 -- (mods.factorio.com/mod/Nexus/discussion/6910ef6d175d819a5a530ec9); Nexus only warns in the chat. The engines of a
 -- platform are switched off by script while it travels a route that neither starts nor ends at the Oort cloud or Sol,
 -- and on again otherwise.
+--
+-- They are off while the platform is parked as well, and come on once it is on its way. An engine that is on at
+-- departure gives one tick of warp thrust at speed 0: the platform falls back to the location and tries again every
+-- tick, without ever leaving. The ordinary thrusters take it off, the warp engines take over from there.
 local WARP_ROUTES = { ["oort-cloud"] = true, sol = true }
 
 local function update_warp_engines(platform)
@@ -84,7 +88,7 @@ local function update_warp_engines(platform)
   end
 
   local connection = platform.space_connection
-  local allowed = not connection or WARP_ROUTES[connection.from.name] or WARP_ROUTES[connection.to.name] or false
+  local allowed = connection and (WARP_ROUTES[connection.from.name] or WARP_ROUTES[connection.to.name]) or false
   for _, engine in pairs(platform.surface.find_entities_filtered({ name = WARP_ENGINE })) do
     engine.disabled_by_script = not allowed
   end
