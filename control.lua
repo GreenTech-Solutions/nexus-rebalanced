@@ -1,5 +1,10 @@
 -- Runtime part of the balance: the limiter pumps of the zero-point energy engine core follow its quality, and the warp
--- drive of a platform works only on the way to the Oort cloud and Sol. Both act only when Nexus is there.
+-- drive of a platform works only on the way to the Oort cloud and Sol. Nexus itself does both since 1.3.6
+-- (prototypes/entity/zero_point_energy_engine_core/pump_qualities.lua, scripts/warp_drive.lua), so this part is only
+-- for Nexus-Updated, the 2.1 fork, which has neither.
+if not script.active_mods["Nexus-Updated"] then
+  return
+end
 
 local CORE = "zero-point-energy-engine-core"
 local BASE_PUMP = "invisible-throughput-limiter-pump"

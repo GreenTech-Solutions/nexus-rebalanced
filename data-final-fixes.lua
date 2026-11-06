@@ -6,4 +6,7 @@ require("prototypes.prices")
 require("prototypes.beacons")
 require("prototypes.omega_lab")
 require("prototypes.road")
-require("prototypes.zpe_pumps")
+-- Nexus 1.3.6 makes these pumps itself; only the fork Nexus-Updated needs them
+if mods["Nexus-Updated"] then
+  require("prototypes.zpe_pumps")
+end
