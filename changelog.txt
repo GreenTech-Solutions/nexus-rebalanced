@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 2026-11-06
+  Features:
+    - For Nexus 1.3.6: passive shield regeneration on by default, and the core pumps and the warp lock only with the fork Nexus-Updated, as Nexus does both itself
+  Bugfixes:
+    - Limiter pumps of the zero-point energy engine core follow its quality, and warp drive engines are off while the platform is parked, so that it can leave
+---------------------------------------------------------------------------------------------------
 Version: 1.0.1
 Date: 2026-10-12
   Bugfixes:
