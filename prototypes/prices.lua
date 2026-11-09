@@ -50,8 +50,8 @@
 --     not exist yet and would be made from the changed recipe, so there would be nothing to do here.
 --
 -- A number is { name, amount in 1.3.4, amount now }. The drop chances of element-882-separate are written to whichever
--- field the product has. Nexus 1.3.4 writes probability (recipe.lua:1199-1206, the time is at :1208); Nexus-Updated,
--- the 2.1 fork, writes independent_probability. The chances are compared with a tolerance, because the
+-- field the product has. Nexus 1.3.4 writes probability (recipe.lua:1199-1206, the time is at :1208); a release that
+-- follows the 2.1 name writes independent_probability. The chances are compared with a tolerance, because the
 -- data dump of the game shows 0.811 as 0.8110000000000002.
 local recycling = require("__recycler__.recycling")
 

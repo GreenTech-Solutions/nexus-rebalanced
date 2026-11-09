@@ -1,4 +1,4 @@
--- Storms of Nexus-Threat. Nexus-Threat (and Nexus-Threat-Updated, the 2.1 fork) has three map settings for them whose defaults keep the
+-- Storms of Nexus-Threat. Nexus-Threat has three map settings for them whose defaults keep the
 -- original storms: instability that never goes down, a lightning attempt chance of 5 + 1 % per 1 % of instability and
 -- up to 3 attempts per tick from 50 % instability. At 100 % that is about 120 strikes a second, more than a full shield
 -- of stabilizers holds, and the instability only grows. This mod sets other defaults: instability halves on its own in
@@ -18,6 +18,6 @@ set_default("double-setting", "nt-instability-half-life", 0, 3)
 set_default("double-setting", "nt-lightning-chance", 1, 0.6)
 set_default("int-setting", "nt-lightning-attempts", 3, 2)
 
--- Since 1.0.8 Nexus-Threat regenerates the shield outside storms only with this map setting on (off by default);
--- Nexus-Threat-Updated always does. On here, so a save moving from the fork keeps its shield coming back.
+-- Since 1.0.8 Nexus-Threat regenerates the shield outside storms only with this map setting on (off by default).
+-- On here: before 1.0.8 the shield always came back outside storms.
 set_default("bool-setting", "nt-shield-passive-regen", false, true)
