@@ -5,11 +5,13 @@
 -- for the zero-point energy engine core went from 6 to 800). It halved the output of five parts and made the
 -- separation of element 882 slower and stingier (changelog.txt:37-94; the recipes
 -- of 1.2.9 and 1.3.4 in prototypes/recipe.lua differ in exactly these 30, apart from three bugfixes and the new recipe
--- raw-matter-8). The advanced microchip took 1 processing unit in 1.2.9 and takes 100 in 1.3.4. This mod takes the
--- middle, "total x3":
---   * A final product (the first part of the table) costs min(3 x the amount of 1.2.9, the amount of 1.3.4) of each
+-- raw-matter-8). The advanced microchip took 1 processing unit in 1.2.9 and 100 in 1.3.4. Nexus 1.3.8 made some
+-- photon-electronics recipes cheaper: for those changed amounts, `from` below is the value in 1.3.8; other `from`
+-- values are unchanged from 1.3.4. The advanced microchip takes 25 electronic memories, 8 electronic triodes, 20 gold
+-- wires and 40 processing units in 1.3.8. This mod takes the middle, "total x3":
+--   * A final product (the first part of the table) costs min(3 x the amount of 1.2.9, the amount of 1.3.8) of each
 --     input; its output and its time are the same in both releases. The advanced photon processor takes 4 omega
---     transformers: 1.2.9 had none, 1.3.4 took 10.
+--     transformers: 1.2.9 had none, 1.3.8 took 10.
 --   * The parts that go into them (the second part) cost what they cost in 1.2.9 again: amounts, outputs, time, drop
 --     chances.
 -- So "x3" is the rule for the inputs of a final product, not for a whole chain: the parts under it are cheap again,
@@ -17,20 +19,20 @@
 -- 1.2.9; 6,800 processors take 5,657,600 omega alloy. Only the numbers below change. Everything else of these
 -- recipes stays, among it the bugfixes of 1.3.3
 -- (ignored_by_productivity on the results of high-energetic-photonen-fluid-mk2, photonen-energy-fluid-mk1 and -mk2,
--- recipe.lua:450, :493, :536) and the replacement of lithium by kr-lithium in omega-alloy. A recipe row that keeps
--- its 1.3.4 number is not listed: the 4 photon processors and 1000 superconductors of the advanced photon processor,
+-- recipe.lua:450, :493, :536) and the replacement of lithium by kr-lithium in omega-alloy. Recipe inputs that need no
+-- change are not listed: the 4 photon processors and 1000 superconductors of the advanced photon processor,
 -- the 10 omega gears of fusion-generator-mk2, the 20 holmium plates and 6 omega alloy of the accumulators, the 1200
 -- gold wires of omega-module-mk4, the 80 supercapacitors and 84 superconductors of omega-quality-module, the 8 omega
 -- gears of omega-substation and the 12 of singularity-assembler.
 --
 -- Two things follow the numbers, because other code made its prototypes from these recipes before this file runs:
---   * Recycling. The recycler built <item>-recycling from each recipe as Nexus 1.3.4 has it (recycler/data-updates.lua:
+--   * Recycling. The recycler built <item>-recycling from each recipe as Nexus 1.3.8 has it (recycler/data-updates.lua:
 --     4-6; Krastorio2 2.1.3 runs the generator once more in its data-final-fixes, prototypes/compatibility/
 --     recycler-final-fixes.lua:9-11), a quarter of the inputs of one item (recycling.lua:105-123), and no later mod
 --     builds them again. During development we caught that a part made cheaper would give back more than it costs:
 --     the advanced microchip takes 1 electronic memory, 1 electronic triode, 4 gold wires and 1 processing unit, and
---     one chip recycled would return 25, 20, 50 and 25 of them, an endless supply of processing units; the electronic
---     triode would be a loop of the same kind, a zero-point energy engine core would return 200 omega alloy for the
+--     one chip recycled would return 6.25, 2, 5 and 10 of them, an endless supply of processing units; a zero-point
+--     energy engine core would return 200 omega alloy for the
 --     18 it costs, and the five parts that are made two at a time would return twice the rate. So when a row changes
 --     a recipe, the recycling recipe of its item is
 --     built again from the changed recipe by the code of the recycler itself (generate_recycling_recipe); only its
@@ -42,16 +44,16 @@
 --     each step of rigor, and a machine with rigor modules works on the copy for its rigor (data-final-fixes.lua:
 --     621-645; control-helpers.lua:104-115). For element-882-separate that is 48 recipes, __rigor_module_mod__25 to
 --     __1200, listed in the mod-data rigor_module_mod_recipe_table by the percent of rigor. rigor-module
---     runs before this file (an optional dependency), so the copies hold the numbers of 1.3.4 and a rigor module in
+--     runs before this file (an optional dependency), so the copies hold the numbers of 1.3.8 and a rigor module in
 --     the atomar separator would undo the change (1 s, half the gold and platin ore, little promethium). The rows are therefore applied to the
 --     copies as well, with one difference: rigor raises the odds of one product, promethium, to r p / (r p - p + 1)
 --     with r = 1 + percent / 100 (utils.lua:100-103; data-final-fixes.lua:639), so a chance that is found raised that
 --     way is changed to its new value raised the same way. Were rigor-module to run after this file, its copies would
 --     not exist yet and would be made from the changed recipe, so there would be nothing to do here.
 --
--- A number is { name, amount in 1.3.4, amount now }. The drop chances of element-882-separate are written to whichever
--- field the product has. Nexus 1.3.4 writes probability (recipe.lua:1199-1206, the time is at :1208); a release that
--- follows the 2.1 name writes independent_probability. The chances are compared with a tolerance, because the
+-- A number is { name, amount in Nexus 1.3.8, amount now }. The drop chances of element-882-separate are written to whichever
+-- field the product has. Nexus 1.3.8 writes independent_probability (recipe.lua:1197-1204, the time is at :1206);
+-- earlier versions may write probability. The chances are compared with a tolerance, because the
 -- data dump of the game shows 0.811 as 0.8110000000000002.
 local recycling = require("__recycler__.recycling")
 
@@ -107,21 +109,14 @@ local changes = {
   {
     "advanced-microchip",
     ingredients = {
-      { "electronic-memory", 100, 1 }, { "electronic-triode", 80, 1 }, { "gold-wire", 200, 4 },
-      { "processing-unit", 100, 1 },
+      { "electronic-memory", 25, 1 }, { "electronic-triode", 8, 1 }, { "gold-wire", 20, 4 },
+      { "processing-unit", 40, 1 },
     },
   },
-  {
-    "electronic-memory",
-    ingredients = { { "omega-beam", 2, 1 } },
-    results = { { "electronic-memory", 1, 2 } },
-  },
+  { "electronic-memory", results = { { "electronic-memory", 1, 2 } } },
   {
     "electronic-triode",
-    ingredients = {
-      { "gold-wire", 40, 4 }, { "omega-beam", 10, 1 }, { "organic-mesh", 10, 1 }, { "platin-mesh", 8, 1 },
-      { "tempered-glass", 20, 2 },
-    },
+    ingredients = { { "gold-wire", 6, 4 }, { "organic-mesh", 2, 1 } },
   },
   {
     "element-882-separate",
@@ -164,7 +159,7 @@ local changes = {
   {
     "photon-sensor",
     ingredients = {
-      { "electronic-triode", 20, 5 }, { "gold-wire", 80, 40 }, { "omega-beam", 80, 6 }, { "omega-gear", 60, 4 },
+      { "electronic-triode", 20, 5 }, { "gold-wire", 80, 40 }, { "omega-beam", 40, 6 }, { "omega-gear", 60, 4 },
       { "omega-inductor", 8, 1 }, { "promethium-lens", 10, 3 }, { "quantum-processor", 100, 4 },
       { "thermal-plate", 8, 2 },
     },
@@ -172,7 +167,7 @@ local changes = {
   { "promethium-lens", ingredients = { { "diamond", 10, 1 } } },
   {
     "thermal-plate",
-    ingredients = { { "gold-foil-mesh", 2, 1 }, { "omega-beam", 10, 2 }, { "organic-mesh", 2, 1 } },
+    ingredients = { { "gold-foil-mesh", 2, 1 }, { "organic-mesh", 2, 1 } },
   },
 }
 
@@ -388,7 +383,7 @@ local function rebuild_recycling(recipe, before)
   end
 
   if not before.built_from_old then
-    log("nexus-rebalanced: " .. current.name .. " is not what the recycler builds from the recipe of Nexus 1.3.4, "
+    log("nexus-rebalanced: " .. current.name .. " is not what the recycler builds from the recipe of Nexus 1.3.8, "
       .. "left as it is")
     return
   end
