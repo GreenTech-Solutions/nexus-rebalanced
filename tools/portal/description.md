@@ -1,4 +1,4 @@
-Balance for [Nexus Extended Promethium Endgame](https://mods.factorio.com/mod/Nexus) by Karu_Kiruna, on Factorio 2.1, for Nexus 1.3.6 or newer. Without Nexus the mod does nothing. Source: [GreenTech-Solutions/nexus-rebalanced](https://github.com/GreenTech-Solutions/nexus-rebalanced).
+Balance for [Nexus Extended Promethium Endgame](https://mods.factorio.com/mod/Nexus) by Karu_Kiruna, on Factorio 2.1, for Nexus 1.3.8 or newer. Without Nexus the mod does nothing. Source: [GreenTech-Solutions/nexus-rebalanced](https://github.com/GreenTech-Solutions/nexus-rebalanced).
 
 ## What changes
 
