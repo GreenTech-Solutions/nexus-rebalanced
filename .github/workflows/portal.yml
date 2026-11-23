@@ -1,8 +1,14 @@
 name: Portal details
 
-# Sets the mod portal page from tools/portal/: gh workflow run portal.yml
+# Sets the mod portal page from tools/portal/ on a push to master that changes it or info.json; by hand: gh workflow run portal.yml
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - tools/portal/**
+      - info.json
 
 permissions:
   contents: read
