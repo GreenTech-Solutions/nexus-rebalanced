@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.1
+Date: 2026-11-23
+  Bugfixes:
+    - [graphics] a new thumbnail made of the Nexus graphics: the promethium crystal in a hexagon, with the omega lab, the singularity assembler, the matter stabilizer, the photon enrichment chamber, photon electronics and omega components around it
+---------------------------------------------------------------------------------------------------
 Version: 1.2.0
 Date: 2026-11-23
   Features:
