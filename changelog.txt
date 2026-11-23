@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.0
+Date: 2026-11-23
+  Features:
+    - a recipe of Nexus changes as a whole or not at all, every change left as it is goes to the log with a total line, Nexus is a required dependency, CI loads the mod
+    - the portal page, README and mod description say what the mod changes, without the old fork; the portal page updates on a push that changes it
+---------------------------------------------------------------------------------------------------
 Version: 1.1.2
 Date: 2026-11-12
   Bugfixes:
