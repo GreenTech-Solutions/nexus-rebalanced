@@ -1,7 +1,8 @@
 name: Release
 
 # Check and release through GreenTech-Solutions/factorio-mod-tools: the check runs on every push and pull request, the
-# release (version, changelog.txt, info.json, mod portal, GitHub release) on a push to master.
+# load job loads the mod with Nexus, Nexus-Threat and rigor-module and fails on any skipped change, and the release
+# (version, changelog.txt, info.json, mod portal, GitHub release) runs on a push to master.
 on:
   push:
     branches:
@@ -24,6 +25,27 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check the mod
         uses: GreenTech-Solutions/factorio-mod-tools@v1
+
+  load:
+    name: load in Factorio
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Load the mod
+        uses: GreenTech-Solutions/factorio-mod-tools/load@v1
+        with:
+          factorio-username: ${{ vars.FACTORIO_USERNAME }}
+          factorio-token: ${{ secrets.FACTORIO_PLAYER_TOKEN }}
+          extra-mods: |
+            Nexus-Threat
+            rigor-module
+          log-required: |
+            nexus-rebalanced: settings: (\d+) of \1 changes applied
+            nexus-rebalanced: prototypes: (\d+) of \1 changes applied
+          log-forbidden: |
+            nexus-rebalanced: .*left as it is
 
   release:
     name: release

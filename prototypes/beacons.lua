@@ -62,20 +62,32 @@ local function productive_recipe(machine)
   return nil
 end
 
+local expect = require("lib.expect")
+
 for _, entry in ipairs(beacon_machines) do
   local group = data.raw[entry[1]]
   local machine = group and group[entry[2]]
   local receiver = machine and machine.effect_receiver
 
-  -- Only the value Nexus writes: a machine without the field takes beacon effects already (the default is true).
-  if receiver and receiver.uses_beacon_effects == false then
+  if not machine or not receiver then
+    log("nexus-rebalanced: " .. entry[1] .. " " .. entry[2] .. " is missing, left as it is")
+    expect.count(false)
+  elseif receiver.uses_beacon_effects == true then
+    expect.count(true)
+  elseif receiver.uses_beacon_effects ~= false then
+    log("nexus-rebalanced: " .. entry[1] .. " " .. entry[2] .. " uses_beacon_effects is "
+      .. expect.text(receiver.uses_beacon_effects) .. ", not false, left as it is")
+    expect.count(false)
+  else
     local recipe = productive_recipe(machine)
     if recipe then
-      log("nexus-rebalanced: " .. entry[1] .. " " .. entry[2] .. " left without beacons: it makes " .. recipe
-        .. " with productivity")
+      log("nexus-rebalanced: " .. entry[1] .. " " .. entry[2]
+        .. " left without beacons, left as it is: it makes " .. recipe .. " with productivity")
+      expect.count(false)
     else
       receiver.uses_beacon_effects = true
       log("nexus-rebalanced: " .. entry[1] .. " " .. entry[2] .. " takes beacon effects")
+      expect.count(true)
     end
   end
 end

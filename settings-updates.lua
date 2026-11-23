@@ -4,20 +4,19 @@
 -- of stabilizers holds, and the instability only grows. This mod sets other defaults: instability halves on its own in
 -- 3 hours (with N drills mining the equilibrium is about N x 0.62 %), 0.6 % of chance per 1 % of instability and up to
 -- 2 attempts per tick. A player can still change all three in the map settings.
-local function set_default(setting_type, name, from, to)
-  local setting = data.raw[setting_type] and data.raw[setting_type][name]
+local expect = require("lib.expect")
 
-  -- Only the default the mod writes; without it (or with another default) the setting is left as it is.
-  if setting and setting.default_value == from then
-    setting.default_value = to
-    log("nexus-rebalanced: setting " .. name .. " default " .. tostring(from) .. " -> " .. tostring(to))
-  end
+if mods["Nexus-Threat"] then
+  expect.set("setting nt-instability-half-life default", data.raw["double-setting"]
+    and data.raw["double-setting"]["nt-instability-half-life"], "default_value", 0, 3)
+  expect.set("setting nt-lightning-chance default", data.raw["double-setting"]
+    and data.raw["double-setting"]["nt-lightning-chance"], "default_value", 1, 0.6)
+  expect.set("setting nt-lightning-attempts default", data.raw["int-setting"]
+    and data.raw["int-setting"]["nt-lightning-attempts"], "default_value", 3, 2)
+  -- Since 1.0.8 Nexus-Threat regenerates the shield outside storms only with this map setting on (off by default).
+  -- On here: before 1.0.8 the shield always came back outside storms.
+  expect.set("setting nt-shield-passive-regen default", data.raw["bool-setting"]
+    and data.raw["bool-setting"]["nt-shield-passive-regen"], "default_value", false, true)
 end
 
-set_default("double-setting", "nt-instability-half-life", 0, 3)
-set_default("double-setting", "nt-lightning-chance", 1, 0.6)
-set_default("int-setting", "nt-lightning-attempts", 3, 2)
-
--- Since 1.0.8 Nexus-Threat regenerates the shield outside storms only with this map setting on (off by default).
--- On here: before 1.0.8 the shield always came back outside storms.
-set_default("bool-setting", "nt-shield-passive-regen", false, true)
+expect.summary("settings")

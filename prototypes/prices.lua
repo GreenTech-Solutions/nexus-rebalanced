@@ -24,6 +24,8 @@
 -- the 10 omega gears of fusion-generator-mk2, the 20 holmium plates and 6 omega alloy of the accumulators, the 1200
 -- gold wires of omega-module-mk4, the 80 supercapacitors and 84 superconductors of omega-quality-module, the 8 omega
 -- gears of omega-substation and the 12 of singularity-assembler.
+-- A recipe changes as a whole: when any of its numbers is neither the one of Nexus 1.3.8 nor the wanted one, the
+-- recipe stays as Nexus has it and the log names the number.
 --
 -- Two things follow the numbers, because other code made its prototypes from these recipes before this file runs:
 --   * Recycling. The recycler built <item>-recycling from each recipe as Nexus 1.3.8 has it (recycler/data-updates.lua:
@@ -40,10 +42,9 @@
 --     builds from the recipe as it was before the row, the known-bad state: one that a mod wrote by hand is left as it
 --     is, and the log says so. The generator also appends an unlock to the recycling technology (recycling.lua:196);
 --     that repeats the one that is there and is taken out again.
---   * Rigor Module. rigor-module 1.1.20 makes a hidden copy of every recipe with a chance among its products, one for
---     each step of rigor, and a machine with rigor modules works on the copy for its rigor (data-final-fixes.lua:
---     621-645; control-helpers.lua:104-115). For element-882-separate that is 48 recipes, __rigor_module_mod__25 to
---     __1200, listed in the mod-data rigor_module_mod_recipe_table by the percent of rigor. rigor-module
+--   * Rigor Module. rigor-module makes a hidden copy of every recipe with a chance among its products, one for each
+--     step of rigor, listed in the mod-data rigor_module_mod_recipe_table by the percent of rigor (data-final-fixes.lua).
+--     A machine with rigor modules works on the copy for its rigor (control-helpers.lua). rigor-module
 --     runs before this file (an optional dependency), so the copies hold the numbers of 1.3.8 and a rigor module in
 --     the atomar separator would undo the change (1 s, half the gold and platin ore, little promethium). The rows are therefore applied to the
 --     copies as well, with one difference: rigor raises the odds of one product, promethium, to r p / (r p - p + 1)
@@ -55,6 +56,7 @@
 -- field the product has. Nexus 1.3.8 writes independent_probability (recipe.lua:1197-1204, the time is at :1206);
 -- earlier versions may write probability. The chances are compared with a tolerance, because the
 -- data dump of the game shows 0.811 as 0.8110000000000002.
+local expect = require("lib.expect")
 local recycling = require("__recycler__.recycling")
 
 local changes = {
@@ -171,24 +173,7 @@ local changes = {
   },
 }
 
-local tolerance = 1e-6
-
 local recipes = data.raw.recipe or {}
-
-local function same(current, expected)
-  return type(current) == "number" and math.abs(current - expected) < tolerance
-end
-
-local function number_text(value)
-  if value == nil then
-    return "missing"
-  end
-  if type(value) == "number" then
-    return string.format("%.9g", value)
-  end
-
-  return tostring(value)
-end
 
 -- The entry of an ingredient or result list that has this name.
 local function find_by_name(list, name)
@@ -215,52 +200,25 @@ local function odds_scale(probability, scale)
   return scale * probability / (scale * probability - probability + 1)
 end
 
--- Sets holder[field] to `to` when it holds `from` now. Returns the log text of the change; or nil and the log text of
--- why the number was left as it is: it has the wanted value already (the third value is true then), or some value that
--- is neither.
-local function set_number(label, holder, field, from, to)
-  local current = holder and holder[field]
-
-  if same(current, from) then
-    holder[field] = to
-    return label .. " " .. number_text(from) .. " -> " .. number_text(to)
-  end
-
-  if same(current, to) then
-    return nil, label .. " is " .. number_text(to) .. " already", true
-  end
-
-  return nil, label .. " is " .. number_text(current) .. ", not " .. number_text(from) .. ", left as it is", false
-end
-
--- Applies the rows of one entry of the table to a recipe. Returns the log texts of what was changed, of what was left
--- as it is, and of the part of that where the number is not the wanted one already. `scale` is given for a copy of
--- rigor-module and only changes how a chance is found, see the header.
+-- Applies the rows of one entry of the table to a recipe as a whole. `scale` is given for a copy of rigor-module and
+-- only changes how a chance is found, see the header.
 local function apply_rows(change, recipe, scale)
+  local rows = {}
   local applied = {}
   local skipped = {}
-  local foreign = {}
 
-  local function try(label, holder, field, from, to)
-    local text, reason, already = set_number(label, holder, field, from, to)
-    if text then
-      applied[#applied + 1] = text
-    else
-      skipped[#skipped + 1] = reason
-      if not already then
-        foreign[#foreign + 1] = reason
-      end
-    end
+  local function add(label, holder, field, from, to)
+    rows[#rows + 1] = { label = label, holder = holder, field = field, from = from, to = to }
   end
 
   for _, row in ipairs(change.ingredients or {}) do
-    try("ingredient " .. row[1], find_by_name(recipe.ingredients, row[1]), "amount", row[2], row[3])
+    add("ingredient " .. row[1], find_by_name(recipe.ingredients, row[1]), "amount", row[2], row[3])
   end
   for _, row in ipairs(change.results or {}) do
-    try("result " .. row[1], find_by_name(recipe.results, row[1]), "amount", row[2], row[3])
+    add("result " .. row[1], find_by_name(recipe.results, row[1]), "amount", row[2], row[3])
   end
   if change.time then
-    try("time", recipe, "energy_required", change.time[1], change.time[2])
+    add("time", recipe, "energy_required", change.time[1], change.time[2])
   end
   for _, row in ipairs(change.probabilities or {}) do
     local product = find_by_name(recipe.results, row[1])
@@ -273,16 +231,47 @@ local function apply_rows(change, recipe, scale)
       local raised_from = odds_scale(from, scale)
       local raised_to = odds_scale(to, scale)
 
-      if same(product[field], raised_from) or same(product[field], raised_to) then
+      if expect.same(product[field], raised_from) or expect.same(product[field], raised_to) then
         from = raised_from
         to = raised_to
       end
     end
 
-    try("chance of " .. row[1], product, field, from, to)
+    add("chance of " .. row[1], product, field, from, to)
   end
 
-  return applied, skipped, foreign
+  local result = "wanted"
+  for _, row in ipairs(rows) do
+    row.state = expect.state(row.holder, row.field, row.from, row.to)
+    if row.state == "other" then
+      result = "left"
+    end
+  end
+
+  if result == "left" then
+    for _, row in ipairs(rows) do
+      if row.state == "other" then
+        local current = row.holder and row.holder[row.field]
+        skipped[#skipped + 1] = row.label .. " is " .. expect.text(current) .. ", not " .. expect.text(row.from)
+          .. ", left as it is"
+      end
+    end
+
+    return result, applied, skipped
+  end
+
+  for _, row in ipairs(rows) do
+    if row.state == "from" then
+      row.holder[row.field] = row.to
+      applied[#applied + 1] = row.label .. " " .. expect.text(row.from) .. " -> " .. expect.text(row.to)
+    end
+  end
+
+  if #applied > 0 then
+    return "changed", applied, skipped
+  end
+
+  return result, applied, skipped
 end
 
 local function log_rows(label, applied, skipped)
@@ -290,7 +279,7 @@ local function log_rows(label, applied, skipped)
     log("nexus-rebalanced: " .. label .. ": " .. table.concat(applied, ", "))
   end
   for _, reason in ipairs(skipped) do
-    log("nexus-rebalanced: " .. label .. " skipped: " .. reason)
+    log("nexus-rebalanced: " .. label .. ": " .. reason)
   end
 end
 
@@ -378,13 +367,13 @@ local function rebuild_recycling(recipe, before)
   end
 
   -- Nothing to give back differently, as with omega-alloy, where only the amount of a fluid changed.
-  if results_key(wanted) == results_key(current) and same(current.energy_required, wanted.energy_required) then
+  if results_key(wanted) == results_key(current) and expect.same(current.energy_required, wanted.energy_required) then
     return
   end
 
   if not before.built_from_old then
-    log("nexus-rebalanced: " .. current.name .. " is not what the recycler builds from the recipe of Nexus 1.3.8, "
-      .. "left as it is")
+    log("nexus-rebalanced: " .. current.name .. " is not what the recycler builds from the recipe of Nexus "
+      .. mods["Nexus"] .. ", left as it is")
     return
   end
 
@@ -394,8 +383,7 @@ local function rebuild_recycling(recipe, before)
 end
 
 -- The hidden copies that rigor-module made of a recipe, by the percent of rigor ("0" is the recipe itself). Applies the
--- rows to each copy. The log has one line for all that changed, and one for each number that was left as it is
--- because it is neither the old one nor the new one; a copy that has the new numbers already is not worth a line.
+-- rows to each copy as a whole. The log has one line for all changed copies, and one for each number left as it is.
 local function change_rigor_copies(change)
   local recipe_name = change[1]
   local rigor_table = data.raw["mod-data"] and data.raw["mod-data"].rigor_module_mod_recipe_table
@@ -419,11 +407,11 @@ local function change_rigor_copies(change)
     local copy = recipes[step.recipe_name]
 
     if copy then
-      local applied, _, foreign = apply_rows(change, copy, 1 + step.percent / 100)
-      if #applied > 0 then
+      local result, _, skipped = apply_rows(change, copy, 1 + step.percent / 100)
+      if result == "changed" then
         changed = changed + 1
       end
-      log_rows("Nexus recipe " .. step.recipe_name, {}, foreign)
+      log_rows("Nexus recipe " .. step.recipe_name, {}, skipped)
     end
   end
 
@@ -432,34 +420,29 @@ local function change_rigor_copies(change)
   end
 end
 
--- Applies one row of the table; false when the recipe does not exist.
+-- Applies one row of the table and counts the recipe as one change; a missing recipe is a skipped change.
 local function change_recipe(change)
   local recipe_name = change[1]
   local recipe = recipes[recipe_name]
   if not recipe then
-    return false
+    log("nexus-rebalanced: Nexus recipe " .. recipe_name .. " is missing, left as it is")
+    expect.count(false)
+    return "left"
   end
 
   local before = recycling_before(recipe)
-  local applied, skipped = apply_rows(change, recipe)
+  local result, applied, skipped = apply_rows(change, recipe)
   log_rows("Nexus recipe " .. recipe_name, applied, skipped)
+  expect.count(result ~= "left")
 
-  if before and #applied > 0 then
+  if before and result == "changed" then
     rebuild_recycling(recipe, before)
   end
   change_rigor_copies(change)
 
-  return true
+  return result
 end
 
-local missing = {}
 for _, change in ipairs(changes) do
-  if not change_recipe(change) then
-    missing[#missing + 1] = change[1]
-  end
-end
-
--- Without Nexus not one of the recipes exists, and that is no news. With it, a missing one was renamed or removed.
-if #missing > 0 and #missing < #changes then
-  log("nexus-rebalanced: Nexus prices: no recipe " .. table.concat(missing, ", "))
+  change_recipe(change)
 end
